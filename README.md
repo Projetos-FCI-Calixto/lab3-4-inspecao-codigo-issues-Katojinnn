@@ -24,7 +24,7 @@
 
 ## Integrantes do Grupo
 
-- Nome 1 — RA:  
+- Nome 1 — RA:  Lucas Cesar Kato
 - Nome 2 — RA:  
 - Nome 3 — RA:  
 - Nome 4 — RA:  
