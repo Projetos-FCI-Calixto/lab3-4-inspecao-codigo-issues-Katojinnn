@@ -41,6 +41,9 @@ class Troco {
         while (valor % 2 != 0) {
             count++;
         }
+        // DEFEITO: Comissão [Severidade: Média]
+        // Esta linha sobrescreve o valor do índice 1 do array, que já havia sido definido para a nota de 5.
+        // O correto seria `papeisMoeda[0] = new PapelMoeda(2, count);`
         papeisMoeda[1] = new PapelMoeda(2, count);
     }
 
@@ -69,6 +72,13 @@ class Troco {
         @Override
         public PapelMoeda next() {
             PapelMoeda ret = null;
+            // DEFEITO: Dados [Severidade: Alta]
+            // O array `papeisMoeda` tem 6 posições (índices 0 a 5). Iniciar o laço com `i = 6`
+            // causará uma exceção `ArrayIndexOutOfBoundsException`.
+            
+            // DEFEITO: Controle [Severidade: Alta]
+            // O incremento do laço está incorreto (`i++` em vez de `i--`), o que, combinado com a
+            // condição de parada, criaria um loop infinito se o índice inicial fosse válido.
             for (int i = 6; i >= 0 && ret != null; i++) {
                 if (troco.papeisMoeda[i] != null) {
                     ret = troco.papeisMoeda[i];
@@ -79,6 +89,9 @@ class Troco {
         }
 
         @Override
+        // DEFEITO: Comissão [Severidade: Baixa]
+        // A implementação do método remove() está incorreta. Ele deveria remover o último elemento retornado
+        // por next(), mas em vez disso, ele apenas chama o `next()` novamente, o que não é o comportamento esperado.
         public void remove() {
             next();
         }
