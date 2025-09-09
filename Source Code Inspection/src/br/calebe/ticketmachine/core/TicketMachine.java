@@ -4,10 +4,6 @@ import br.calebe.ticketmachine.exception.PapelMoedaInvalidaException;
 import br.calebe.ticketmachine.exception.SaldoInsuficienteException;
 import java.util.Iterator;
 
-/**
- *
- * @author Calebe de Paula Bianchini
- */
 public class TicketMachine {
 
     protected int valor;
@@ -21,13 +17,11 @@ public class TicketMachine {
 
     public void inserir(int quantia) throws PapelMoedaInvalidaException {
         boolean achou = false;
-        for (int i = 0; i < papelMoeda.length && !achou; i++) {
-            // DEFEITO: Comissão [Severidade: Alta]
-            // A comparação está sendo feita sempre com o índice 1 (papelMoeda[1]), que corresponde à nota de 5.
-            // O correto seria comparar com o índice do laço (papelMoeda[i]).
-            // Isso impede a inserção de qualquer nota que não seja a de 5.
-            if (papelMoeda[1] == quantia) {
+        // Correção da Issue 1: A comparação agora usa o índice do laço (papelMoeda[i]).
+        for (int i = 0; i < papelMoeda.length; i++) {
+            if (papelMoeda[i] == quantia) {
                 achou = true;
+                break;
             }
         }
         if (!achou) {
@@ -39,25 +33,27 @@ public class TicketMachine {
     public int getSaldo() {
         return saldo;
     }
-        // DEFEITO: Omissão [Severidade: Alta]
-        // O método getTroco, que implementa o caso de uso (Solicitar troco), não foi implementado.
-        // Conforme a documentação, ele deveria verificar o saldo e devolvê-lo em notas.
-    public Iterator<Integer> getTroco() {
-        return null;
+
+    // Correção da Issue 2: O método getTroco foi implementado.
+    // A assinatura foi alterada para Iterator<PapelMoeda> para ser consistente
+    // com a classe Troco, que retorna objetos PapelMoeda.
+    public Iterator<PapelMoeda> getTroco() {
+        Troco troco = new Troco(this.saldo);
+        this.saldo = 0; // Zera o saldo após o troco ser calculado.
+        return troco.getIterator();
     }
 
     public String imprimir() throws SaldoInsuficienteException {
         if (saldo < valor) {
             throw new SaldoInsuficienteException();
         }
-        // DEFEITO: Comissão [Severidade: Alta]
-        // A documentação especifica que o valor do bilhete deve ser debitado do saldo.
-        // O código não realiza essa operação (saldo = saldo - valor).
+        
+        // Correção da Issue 3: O valor do bilhete agora é debitado do saldo.
+        this.saldo -= this.valor;
+
         String result = "*****************\n";
-        // DEFEITO: Comissão [Severidade: Média]
-        // O bilhete impresso mostra o saldo total disponível, e não o valor do bilhete que foi pago.
-        // O correto seria exibir o 'valor' do bilhete.
-        result += "*** R$ " + saldo + ",00 ****\n";
+        // Correção (relacionada à Issue 3): O bilhete agora exibe o valor do bilhete, e não o saldo.
+        result += "*** R$ " + valor + ",00 ****\n";
         result += "*****************\n";
         return result;
     }
